@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cloud Drive</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Heroicons for file icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/heroicons/2.1.1/heroicons.min.js"></script>
+    <style>
+        body { background: linear-gradient(to bottom right, #0f172a, #1e293b); }
+        .glass { backdrop-filter: blur(12px); background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); }
+    </style>
+</head>
+<body class="h-full text-white">
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="flex items-center justify-center min-h-screen">
+        <div class="glass p-10 rounded-2xl shadow-2xl max-w-md w-full text-center">
+            <h1 class="text-4xl font-bold mb-4">My Cloud Drive</h1>
+            <p class="text-gray-300 mb-8">Enter your password to access your private drive</p>
+            <input type="password" id="password-input" placeholder="Password" class="w-full px-6 py-4 rounded-lg bg-white/10 border border-white/20 focus:outline-none focus:border-white/50 text-lg mb-4">
+            <button onclick="login()" class="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition">Enter</button>
+            <p id="error-msg" class="text-red-400 mt-4 hidden">Wrong password – try again!</p>
+        </div>
+    </div>
+
+    <!-- Dashboard (hidden until login) -->
+    <div id="dashboard" class="hidden min-h-screen">
+        <!-- Top Bar -->
+        <header class="bg-slate-900/50 glass border-b border-white/10">
+            <div class="flex items-center justify-between px-6 py-4">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-2xl font-bold" id="user-name">User's Drive</h2>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <p class="text-sm text-gray-400">Storage Used</p>
+                        <p class="font-semibold">12.4 GB / 50 GB</p>
+                    </div>
+                    <button onclick="toggleTheme()" class="p-2 rounded-lg bg-white/10 hover:bg-white/20">
+                        <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m.386-6.364l1.591-1.591" />
+                        </svg>
+                    </button>
+                    <button onclick="logout()" class="px-4 py-2 bg-red-600/80 rounded-lg hover:bg-red-700">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex">
+            <!-- Sidebar -->
+            <aside class="w-64 bg-slate-900/50 glass border-r border-white/10 p-6">
+                <nav class="space-y-4">
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-white/10">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"/></svg>
+                        All Files
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        Recent
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        Photos
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2m-2 10h4"/></svg>
+                        Shared
+                    </a>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="flex-1 p-10">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
+                    <!-- File Cards - Repeat for each file -->
+                    <div class="glass rounded-xl p-6 hover:scale-105 transition transform cursor-pointer">
+                        <div class="flex flex-col items-center text-center">
+                            <svg class="w-16 h-16 text-blue-400 mb-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zM3 9h14v5H3V9zm4-4h6v2H7V5z" clip-rule="evenodd"/></svg>
+                            <p class="font-semibold">Document.pdf</p>
+                            <p class="text-sm text-gray-400">2.4 MB</p>
+                        </div>
+                    </div>
+                    <!-- Add more file cards here -->
+                    <div class="glass rounded-xl p-6 hover:scale-105 transition transform cursor-pointer">
+                        <svg class="w-16 h-16 text-green-400 mb-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm10 0H6v8h8V4z" clip-rule="evenodd"/></svg>
+                        <p class="font-semibold">Spreadsheet.xlsx</p>
+                        <p class="text-sm text-gray-400">1.1 MB</p>
+                    </div>
+                    <!-- You can copy-paste more cards with different icons/colors -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const accounts = {
+            'john123': { name: "John's Drive", files: ['Document.pdf', 'Photo.jpg', 'Notes.txt'] },
+            'jane456': { name: "Jane's Drive", files: ['Recipe.docx', 'Vacation.png', 'Budget.xlsx'] },
+            // Add more: 'yourpassword': { name: "Your Name's Drive", files: [...] }
+        };
+
+        function login() {
+            const pass = document.getElementById('password-input').value;
+            const error = document.getElementById('error-msg');
+            if (accounts[pass]) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                document.getElementById('user-name').textContent = accounts[pass].name;
+                error.classList.add('hidden');
+                // You can dynamically add files here if you want
+            } else {
+                error.classList.remove('hidden');
+            }
+            document.getElementById('password-input').value = '';
+        }
+
+        function logout() {
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+        }
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            // Simple dark/light switch (Tailwind has dark mode built-in)
+            const icon = document.getElementById('theme-icon');
+            if (document.documentElement.classList.contains('dark')) {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />';
+            } else {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m.386-6.364l1.591-1.591" />';
+            }
+        }
+    </script>
+</body>
+</html>
